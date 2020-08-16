@@ -6,6 +6,7 @@
             [app.renderer.events :as events]
             [goog.string :as gstring]
             [goog.string.format]
+            [com.rpl.specter :as sp]
             [cuerdas.core :as cuerdas]
             [app.renderer.macros :refer [when-let*]]))
 
@@ -44,7 +45,7 @@
          [:div.card
           [:div.card-header
            [:div.d-flex.w-100 ;;.justify-content-between
-            (when (seq left) (into [:div] left))
+            (when (seq left) (into [:div.d-flex] left))
             [:div.flex-grow-1.ml-1.align-middle.mb-0 title]
             (when (seq right) (into [:div] right))
             [:a.ml-1.align-middle
@@ -60,21 +61,26 @@
                  children)]]]))))
 
 (defn ^:private ability-li
-  [char-id {:keys [id name description cooldown back-in additional-markup duration-left] :as ability}]
-  (let [on-cooldown? (zero? (or back-in 0))]
+  [char {:keys [id name description cooldown back-in
+                   additional-markup duration-left ap] :as ability}]
+  (let [on-cooldown? (pos? (or back-in 0))
+        disabled? (or on-cooldown? (< (:ap-left char) ap))]
+    (println on-cooldown? (< (:ap-left char) ap) name)
     [:div.list-group-item.list-group-item-action.flex-column.align-items-start
-     {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability char-id id])
+     {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability (:uuid char) id])
       :on-mouse-leave #(rf/dispatch [:remove-highlighted-ability])
       :style {:padding 0
               :margin-bottom "0.25em"}}
      [accordion name
-      :left [[:i.fa.fa-fw {:style {:cursor (if on-cooldown? "pointer" "not-allowed")}
-                           :class [(if on-cooldown? "fa-check-circle-o" "fa-times-circle-o")]
-                           :on-click (fn [event]
-                                       (rf/dispatch [:use-ability char-id ability])
-                                       (.preventDefault event))}]]
+      :left [[:div [:i.fa.fa-fw {:style {:cursor (if disabled? "not-allowed" "pointer")}
+                                 :class [(if disabled? "fa-times-circle-o" "fa-check-circle-o")]
+                                 :on-click (fn [event]
+                                             (when-not disabled?
+                                               (rf/dispatch [:use-ability (:uuid char) ability]))
+                                             (.preventDefault event))}]]
+             [:div.text-muted (gstring/format "%sAP" ap)]]
       :right [(when (pos? duration-left) [:span.badge.badge-secondary.badge-pill duration-left])
-              (when-not on-cooldown? [:span.badge.badge-primary.badge-pill back-in])]
+              (when on-cooldown? [:span.badge.badge-primary.badge-pill back-in])]
       :children [[:p.mb-1description description]
                  (when additional-markup
                    (render-additional-markup additional-markup))
@@ -90,12 +96,12 @@
     :children [[:p.mb-1description description]]]])
 
 (defn character []
-  (when-let* [{:keys [uuid name faction description abilities passives health dt interleaved?] :as x} @(rf/subscribe [::subs/selected-character])
-              ;; {char-id :character-id ability-id :ability-id} @(rf/subscribe [::subs/highlighted-ability])
-              ]
+  (when-let* [{:keys [uuid name faction description abilities
+                      passives health dt interleaved?] :as char}
+              @(rf/subscribe [::subs/selected-character])]
     (let [abilities-lis (for [ability (vals abilities)]
                           ^{:key (:id ability)}
-                          (ability-li uuid ability))
+                          (ability-li char ability))
           passives-lis (for [passive passives]
                          ^{:key (:id passives)}
                          (passive-li passive))]
@@ -110,6 +116,9 @@
          [:ul.list-unstyled
           [:li [kv "Health" health]]
           [:li [kv "DT" dt]]
+          [:li [kv "AP" (gstring/format "%d / %d"
+                                        (:ap char)
+                                        (or (:ap-left char) (:ap char)))]]
           (when interleaved?
             [:li [:em "Interleaved"]])]
          (when (seq passives-lis)
@@ -160,10 +169,10 @@
               [:circle {:style {:stroke "black" :stroke-width 1 :fill "none"}
                         :cx 0 :cy 6 :r 5} ]]]]
            [:div.list-group.list-group-flush
-            (for [[char-id {:keys [id name]}] chunk]
+            (for [[char {:keys [id name]}] chunk]
               ^{:key id}
               [:a.list-group-item.list-group-item-action.flex-column.align-items-start
-               {:class [(when (and (= char-id character-id) (= ability-id id)) "bg-light")]
+               {:class [(when (and (= char character-id) (= ability-id id)) "bg-light")]
                 :style {:padding "0.1em"
                         :transition "background 0.25s"}}
                [:div.d-flex.w-100.justify-content-center

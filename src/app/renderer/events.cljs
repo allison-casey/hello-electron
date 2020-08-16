@@ -1,5 +1,6 @@
 (ns app.renderer.events
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [com.rpl.specter :as sp]))
 
 (rf/reg-event-db
  :initialize
@@ -31,51 +32,36 @@
  (fn [db [_ character-uuid]]
    (assoc db :selected-character-id character-uuid)))
 
-(defn spy [x] (cljs.pprint/pprint x) x)
-
 (rf/reg-event-db
  :use-ability
- (fn [db [_ character-uuid {:keys [id cooldown duration]}]]
-   (let [db (assoc-in db
-                      [:characters character-uuid :abilities id :back-in]
-                      cooldown)]
-     (if duration
-       (assoc-in db
-                 [:characters character-uuid :abilities id :duration-left]
-                  duration)
-        db))))
-
-(defn ^:private update-counts
-  [m idx [char-id ability-id]]
-  (let [ability (-> (get-in m [char-id :abilities ability-id])
-                   (update :back-in dec))
-        ability (if (pos? (:duration-left ability)) (update ability :duration-left dec) ability)        ]
-    (assoc-in m [char-id :abilities ability-id] ability)))
+ (fn [db [_ character-uuid {:keys [id cooldown ap duration]}]]
+   (let [character (get-in db [:characters character-uuid])
+         ability (-> (get-in character [:abilities id])
+                    (assoc :back-in cooldown)
+                    (cond-> duration (assoc :duration-left duration)))
+         character (-> character
+                      (assoc :ap-left (- (or (:ap-left character)
+                                             (:ap character))
+                                         ap))
+                      (assoc-in [:abilities id] ability))]
+     (assoc-in db [:characters character-uuid] character))))
 
 (rf/reg-event-db
  :increment-round
  (fn [db _]
-   (let [paths (into []
-                     (for [{:keys [uuid abilities]} (-> db :characters vals)
-                           [id ability] abilities
-                           :when (pos? (get ability :back-in))]
-                       [uuid id]))
-         characters (:characters db)         ]
-     (assoc db :characters (reduce-kv update-counts characters paths)))))
+   (->> db
+      (sp/transform [:characters sp/MAP-VALS :abilities sp/MAP-VALS :back-in pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS :abilities sp/MAP-VALS :duration-left pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS] #(assoc % :ap-left (:ap %))))))
 
 (rf/reg-event-db
  :increment-interleaved-round
  (fn [db _]
-   (let [paths (into []
-                     (for [{:keys [uuid interleaved? abilities]} (-> db :characters vals)
-                           [id ability] abilities
-                           :when (and (pos? (get ability :back-in))
-                                      interleaved?)]
-                       [uuid id]))
-         characters (:characters db)
-         reducer (fn [m idx [char-id ability-id]]
-                   (update-in m [char-id :abilities ability-id :back-in] dec))]
-     (assoc db :characters (reduce-kv update-counts characters paths)))))
+   (->> db
+      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :back-in pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :duration-left pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %)] #(assoc % :ap-left (:ap %))))))
+
 
 (rf/reg-event-db
  :set-highlighted-ability
