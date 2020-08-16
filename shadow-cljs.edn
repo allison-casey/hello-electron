@@ -4,6 +4,7 @@
  :dependencies [[reagent "1.0.0-alpha2"]
                 [re-frame "1.0.0"]
                 [re-com "2.8.0"]
+                [funcool/cuerdas "2020.03.26-3"]
                 [cljs-node-io "1.1.2"]]
 
  :dev-http {8080 "resources/public/"}
@@ -16,4 +17,3 @@
                      :output-dir "resources/public/js"
                      :asset-path "js"
                      :modules {:renderer {:init-fn app.renderer.core/start!}}}}}
-

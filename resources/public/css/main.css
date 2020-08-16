@@ -2,3 +2,11 @@
   width: 100px;
   margin-left: 5px;
 }
+
+.pad-children-right > *:not(:last-child) {
+    margin-right: 0.5em;
+}
+
+.pad-children-left > *:not(:last-child) {
+    margin-left: 0.5em;
+}
