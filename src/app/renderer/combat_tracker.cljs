@@ -60,7 +60,7 @@
                  children)]]]))))
 
 (defn ^:private ability-li
-  [char-id {:keys [id name description cooldown back-in additional-markup] :as ability}]
+  [char-id {:keys [id name description cooldown back-in additional-markup duration-left] :as ability}]
   (let [on-cooldown? (zero? (or back-in 0))]
     [:div.list-group-item.list-group-item-action.flex-column.align-items-start
      {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability char-id id])
@@ -73,7 +73,8 @@
                            :on-click (fn [event]
                                        (rf/dispatch [:use-ability char-id ability])
                                        (.preventDefault event))}]]
-      :right [(when-not on-cooldown? [:span.badge.badge-primary.badge-pill back-in])]
+      :right [(when (pos? duration-left) [:span.badge.badge-secondary.badge-pill duration-left])
+              (when-not on-cooldown? [:span.badge.badge-primary.badge-pill back-in])]
       :children [[:p.mb-1description description]
                  (when additional-markup
                    (render-additional-markup additional-markup))
@@ -124,7 +125,8 @@
 
 (defn timeline []
   (let [on-cooldown @(rf/subscribe [::subs/abilities-on-cooldown])
-        {:keys [character-id ability-id]} @(rf/subscribe [::subs/highlighted-ability])]
+        {character-id :character/id
+         ability-id :ability/id} @(rf/subscribe [::subs/highlighted-ability])]
     [:<>
      [:div.row
       [:div.col

@@ -8,8 +8,8 @@
     :characters {}
     :selected-character-id nil
     :tab :character-select
-    :highlighted-ability {:character-id nil
-                          :ability-id nil}}))
+    :highlighted-ability {:character/id nil
+                          :ability/id nil}}))
 
 (rf/reg-event-db
  :initialize-templates
@@ -35,10 +35,22 @@
 
 (rf/reg-event-db
  :use-ability
- (fn [db [_ character-uuid ability]]
-   (assoc-in db
-              [:characters character-uuid :abilities (:id ability) :back-in]
-              (:cooldown ability))))
+ (fn [db [_ character-uuid {:keys [id cooldown duration]}]]
+   (let [db (assoc-in db
+                      [:characters character-uuid :abilities id :back-in]
+                      cooldown)]
+     (if duration
+       (assoc-in db
+                 [:characters character-uuid :abilities id :duration-left]
+                  duration)
+        db))))
+
+(defn ^:private update-counts
+  [m idx [char-id ability-id]]
+  (let [ability (-> (get-in m [char-id :abilities ability-id])
+                   (update :back-in dec))
+        ability (if (pos? (:duration-left ability)) (update ability :duration-left dec) ability)        ]
+    (assoc-in m [char-id :abilities ability-id] ability)))
 
 (rf/reg-event-db
  :increment-round
@@ -48,10 +60,8 @@
                            [id ability] abilities
                            :when (pos? (get ability :back-in))]
                        [uuid id]))
-         characters (:characters db)
-         reducer (fn [m idx [char-id ability-id]]
-                   (update-in m [char-id :abilities ability-id :back-in] dec))]
-     (assoc db :characters (reduce-kv reducer characters paths)))))
+         characters (:characters db)         ]
+     (assoc db :characters (reduce-kv update-counts characters paths)))))
 
 (rf/reg-event-db
  :increment-interleaved-round
@@ -65,19 +75,19 @@
          characters (:characters db)
          reducer (fn [m idx [char-id ability-id]]
                    (update-in m [char-id :abilities ability-id :back-in] dec))]
-     (assoc db :characters (reduce-kv reducer characters paths)))))
+     (assoc db :characters (reduce-kv update-counts characters paths)))))
 
 (rf/reg-event-db
  :set-highlighted-ability
  (fn [db [_ character-id ability-id]]
-   (assoc db :highlighted-ability {:character-id character-id
-                                   :ability-id ability-id})))
+   (assoc db :highlighted-ability {:character/id character-id
+                                   :ability/id ability-id})))
 
 (rf/reg-event-db
  :remove-highlighted-ability
  (fn [db _]
-   (assoc db :highlighted-ability {:character-id nil
-                                   :ability-id nil})))
+   (assoc db :highlighted-ability {:character/id nil
+                                   :ability/id nil})))
 
 (rf/reg-event-db
  :change-tab
