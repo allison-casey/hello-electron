@@ -153,7 +153,7 @@
             (for [[char-id {:keys [id name]}] chunk]
               ^{:key id}
               [:a.list-group-item.list-group-item-action.flex-column.align-items-start
-               {:class [(when (and (= char-id character-id) (= ability-id id)) "bg-info")]
+               {:class [(when (and (= char-id character-id) (= ability-id id)) "bg-light")]
                 :style {"padding" "0.1em"}}
                [:div.d-flex.w-100.justify-content-center
                 [:p.mb-1 name]]])]])]]]]))

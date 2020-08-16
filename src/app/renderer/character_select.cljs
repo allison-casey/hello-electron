@@ -16,25 +16,32 @@
             template-name (if (or (cuerdas/blank? @template-name-override)
                                   (cuerdas/empty-or-nil? @template-name-override))
                             placeholder-name
-                            @template-name-override)]
-        [:div
+                            @template-name-override)
+            submittable? (not (or (nil? @selected-template-id)
+                                  @(rf/subscribe [::subs/duplicate-character-name? template-name])))]
+        [:form
          [:h4 "Add Characters"]
-         [single-dropdown
-          :choices templates
-          :model selected-template-id
-          :label-fn :name
-          :placeholder "Select a template"
-          :width "300px"
-          :on-change #(reset! selected-template-id %)]
-         [input-text
-          :model template-name-override
-          :on-change #(reset! template-name-override %)
-          :change-on-blur? false
-          :placeholder placeholder-name]
+         [:div.form-group
+          [:label "Template"]
+          [single-dropdown
+           :choices templates
+           :model selected-template-id
+           :label-fn :name
+           :placeholder "Select a template"
+           :width "300px"
+           :on-change #(reset! selected-template-id %)]]
+         [:div.form-group
+          [:label "Name"]
+          [input-text
+           :model template-name-override
+           :on-change #(reset! template-name-override %)
+           :change-on-blur? false
+           :placeholder placeholder-name]]
          [button
+          :attr {:disabled ""}
+          :class (str "btn " (if submittable? "btn-primary" "btn-secondary"))
           :label "Add Character"
-          :disabled? (or (nil? @selected-template-id)
-                         @(rf/subscribe [::subs/duplicate-character-name? template-name]))
+          :disabled? (not submittable?)
           :on-click (fn []
                       (let [character (-> selected-template
                                          (assoc :name template-name)
@@ -46,7 +53,7 @@
   (let [characters @(rf/subscribe [::subs/characters])
         active-character @(rf/subscribe [::subs/selected-character-id])]
     [:div
-     [:h4 "Characters"]
+     [:h4.text-right "Characters"]
      [:ul.list-group
       (for [{:keys [uuid name]} characters]
         ^{:key uuid}
@@ -56,9 +63,8 @@
          name])]]))
 
 (defn render []
-  (let []
-    [:<>
-     [:div.col
-      [(add-character)]]
-     [:div.col
-      [active-characters]]]))
+  [:<>
+   [:div.col
+    [add-character]]
+   [:div.col
+    [active-characters]]])

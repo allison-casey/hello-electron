@@ -24,28 +24,14 @@
        (rf/dispatch [:initialize-templates
                      (map process-template (js->clj arg :keywordize-keys true))])))
 
-(defn active-characters []
-  (let [characters @(rf/subscribe [::subs/characters])
-        active-character @(rf/subscribe [::subs/selected-character-id])]
-    [:div
-     [:h4 "Characters"]
-     [:ul.list-group
-      (for [{:keys [uuid name]} characters]
-        ^{:key uuid}
-        [:li
-         {:on-click #(rf/dispatch [:set-selected-character-id uuid])
-          :class ["list-group-item" (if (= uuid active-character) "active")]}
-         name])]]))
-
-
 (defn tabs []
-  (let [selected-tab @(rf/subscribe [::subs/tab])]
-    (fn []
-      [:ul.nav.justify-content-center
-       [:li.nav-item {:on-click #(rf/dispatch [:change-tab :character-select])}
-        [:a.nav-link.active {:href "#"} "Character Select"]]
-       [:li.nav-item {:on-click #(rf/dispatch [:change-tab :combat-tracker])}
-        [:a.nav-link {:href "#"} "Combat Tracker"]]])))
+  (let [selected-tab @(rf/subscribe [::subs/tab])
+        tab (fn [name id]
+              [:li.nav-itme {:on-click #(rf/dispatch [:change-tab id])}
+               [:a.nav-link {:href "#"} (if (= id selected-tab) [:u name] name)]])]
+    [:ul.nav.justify-content-center.p-3
+     [tab "Character Select" :character-select]
+     [tab "Combat Tracker" :combat-tracker]]))
 
 (defn root-component []
   (let [tab @(rf/subscribe [::subs/tab])]
@@ -57,17 +43,6 @@
        (case tab
          :character-select [char-select/render]
          :combat-tracker [combat-tracker/render])]]]))
-
-;; [(add-character)]
-;; [active-characters]
-;; [character-info]
-;; [button
-;;  :label "Increment Round"
-;;  :on-click #(rf/dispatch [:increment-round])]
-;; [button
-;;  :label "Increment Interleaved Round"
-;;  :on-click #(rf/dispatch [:increment-interleaved-round])]
-;; [ability-timeline]
 
 (defn start! []
   (rf/dispatch-sync [:initialize])
