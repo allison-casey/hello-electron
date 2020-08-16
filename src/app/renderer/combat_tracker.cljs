@@ -80,7 +80,7 @@
     :children [[:p.mb-1description description]]]])
 
 (defn character []
-  (when-let* [{:keys [uuid name faction description abilities passives health dt] :as x} @(rf/subscribe [::subs/selected-character])
+  (when-let* [{:keys [uuid name faction description abilities passives health dt interleaved?] :as x} @(rf/subscribe [::subs/selected-character])
               ;; {char-id :character-id ability-id :ability-id} @(rf/subscribe [::subs/highlighted-ability])
               ]
     (let [abilities-lis (for [ability (vals abilities)]
@@ -99,7 +99,9 @@
          [:p.card-text description]
          [:ul.list-unstyled
           [:li [kv "Health" health]]
-          [:li [kv "DT" dt]]]
+          [:li [kv "DT" dt]]
+          (when interleaved?
+            [:li [:em "Interleaved"]])]
          (when (seq passives-lis)
            [:<>
             [:hr]
