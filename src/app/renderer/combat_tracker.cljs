@@ -45,7 +45,7 @@
          [:div.card
           [:div.card-header
            [:div.d-flex.w-100 ;;.justify-content-between
-            (when (seq left) (into [:div.d-flex] left))
+            (when (seq left) (into [:div.d-flex.pad-children-left] left))
             [:div.flex-grow-1.ml-1.align-middle.mb-0 title]
             (when (seq right) (into [:div] right))
             [:a.ml-1.align-middle
@@ -60,6 +60,12 @@
                   {:ref #(when % (swap! s assoc :child-height (.-clientHeight %)))}]
                  children)]]]))))
 
+(defn icon [fa-class & {:keys [on-click style]}]
+  [:i.fa.fa-fw
+   {:style style
+    :on-click on-click
+    :class [fa-class]}])
+
 (defn ^:private ability-li
   [char {:keys [id name description cooldown back-in
                    additional-markup duration-left ap] :as ability}]
@@ -71,12 +77,17 @@
       :style {:padding 0
               :margin-bottom "0.25em"}}
      [accordion name
-      :left [[:div [:i.fa.fa-fw {:style {:cursor (if disabled? "not-allowed" "pointer")}
-                                 :class [(if disabled? "fa-times-circle-o" "fa-check-circle-o")]
-                                 :on-click (fn [event]
-                                             (when-not disabled?
-                                               (rf/dispatch [:use-ability (:uuid char) ability]))
-                                             (.preventDefault event))}]]
+      :left [[:div [icon (if disabled? "fa-times-circle-o" "fa-check-circle-o")
+                    :style {:cursor (if disabled? "not-allowed" "pointer")}
+                    :on-click  (fn [event]
+                                 (when-not disabled?
+                                   (rf/dispatch [:use-ability (:uuid char) ability]))
+                                 (.preventDefault event))]]
+             [:span \u007C]
+             [:div [icon "fa-crosshairs" :style {:cursor "pointer"}
+                    :on-click #(.writeText js/navigator.clipboard "/roll 1d20 + 4")]]
+             [:div [icon "fa-bomb" :style {:cursor "pointer"}]]
+             [:span \u007C]
              [:div.text-muted (gstring/format "%sAP" ap)]]
       :right [(when (pos? duration-left) [:span.badge.badge-secondary.badge-pill duration-left])
               (when on-cooldown? [:span.badge.badge-primary.badge-pill back-in])]
