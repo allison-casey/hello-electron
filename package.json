@@ -17,11 +17,13 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^8.2.5",
-    "shadow-cljs": "^2.8.110"
+    "shadow-cljs": "^2.10.19"
   },
   "dependencies": {
     "create-react-class": "^15.6.3",
     "react": "^16.10.2",
-    "react-dom": "^16.10.2"
+    "react-dom": "^16.10.2",
+    "scheduler": "^0.19.1",
+    "yaml": "^1.10.0"
   }
 }

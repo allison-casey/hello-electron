@@ -1,0 +1,5 @@
+{:id :acolyte.assassin
+ :name "Acolyte Assassin"
+ :faction :the-black-hand
+ :description "High mobility parkour focused melee user that enters a flow state for increased mobility and special takedowns"
+ :abilities {}}
