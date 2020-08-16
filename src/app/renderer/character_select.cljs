@@ -61,10 +61,12 @@
         ^{:key uuid}
         [:a.list-group-item.list-group-item-action.flex-column.align-items-start
          {:href "#"
-          :class [(if (= uuid active-character) "active")]}
+          :class [(if (= uuid active-character) "active")]
+          :style {:cursor "default"}}
          [:div.d-flex.w-100.justify-content-between
           [:div.p-1 [:i.fa.fa-fw.fa-times.text-danger
-                 {:style {:transform "scale(1.5,1.5)"}
+                     {:style {:transform "scale(1.5,1.5)"
+                              :cursor "pointer"}
                   :on-click #(rf/dispatch [:remove-character uuid])}]]
           [:h5 {:on-click #(rf/dispatch [:set-selected-character-id uuid])}
            name]]])]]))

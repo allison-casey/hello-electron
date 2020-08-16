@@ -95,7 +95,7 @@
         [:div.card-body
          [:h5.card-title name]
          [:h6.card-subtitle.text-muted.mb-2
-          (cuerdas/phrase faction)]
+          (cuerdas/title faction)]
          [:p.card-text description]
          [:ul.list-unstyled
           [:li [kv "Health" health]]
