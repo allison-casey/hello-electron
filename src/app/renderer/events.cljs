@@ -22,6 +22,11 @@
    (update db :characters assoc (:uuid character) character)))
 
 (rf/reg-event-db
+ :remove-character
+ (fn [db [_ character-uuid]]
+   (update db :characters dissoc character-uuid)))
+
+(rf/reg-event-db
  :set-selected-character-id
  (fn [db [_ character-uuid]]
    (assoc db :selected-character-id character-uuid)))

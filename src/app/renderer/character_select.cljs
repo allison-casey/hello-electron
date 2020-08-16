@@ -28,7 +28,8 @@
            :model selected-template-id
            :label-fn :name
            :placeholder "Select a template"
-           :width "300px"
+           ;; :width "300px"
+           :class "w-100"
            :on-change #(reset! selected-template-id %)]]
          [:div.form-group
           [:label "Name"]
@@ -36,6 +37,7 @@
            :model template-name-override
            :on-change #(reset! template-name-override %)
            :change-on-blur? false
+           :width "100%"
            :placeholder placeholder-name]]
          [button
           :attr {:disabled ""}
@@ -54,17 +56,23 @@
         active-character @(rf/subscribe [::subs/selected-character-id])]
     [:div
      [:h4.text-right "Characters"]
-     [:ul.list-group
+     [:div.list-group.list-group-flush
       (for [{:keys [uuid name]} characters]
         ^{:key uuid}
-        [:li
-         {:on-click #(rf/dispatch [:set-selected-character-id uuid])
-          :class ["list-group-item" (if (= uuid active-character) "active")]}
-         name])]]))
+        [:a.list-group-item.list-group-item-action.flex-column.align-items-start
+         {:href "#"
+          :class [(if (= uuid active-character) "active")]}
+         [:div.d-flex.w-100.justify-content-between
+          [:div.p-1 [:i.fa.fa-fw.fa-times.text-danger
+                 {:style {:transform "scale(1.5,1.5)"}
+                  :on-click #(rf/dispatch [:remove-character uuid])}]]
+          [:h5 {:on-click #(rf/dispatch [:set-selected-character-id uuid])}
+           name]]])]]))
 
 (defn render []
   [:<>
    [:div.col
     [add-character]]
+   [:div.col-4]
    [:div.col
     [active-characters]]])
