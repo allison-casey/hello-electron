@@ -3,6 +3,7 @@
             [reagent.core :as r]
             [re-com.core :refer [horizontal-tabs single-dropdown input-text button]]
             [app.renderer.subs :as subs]
+            [cuerdas.core :as cuerdas]
             [app.renderer.events :as events]))
 
 (defn add-character []
@@ -12,7 +13,10 @@
     (fn []
       (let [selected-template (first (filter #(= (:id %) @selected-template-id) templates))
             placeholder-name (get selected-template :name)
-            template-name (or @template-name-override placeholder-name)]
+            template-name (if (or (cuerdas/blank? @template-name-override)
+                                  (cuerdas/empty-or-nil? @template-name-override))
+                            placeholder-name
+                            @template-name-override)]
         [:div
          [:h4 "Add Characters"]
          [single-dropdown
