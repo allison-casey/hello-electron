@@ -162,10 +162,10 @@
 
 (defn render []
   [:<>
-   [:div.col
+   [:div.col-md
     [character-selector]]
-   [:div.col-6
+   [:div.col-md-6
     [character]]
-   [:div.col
+   [:div.col-md
     [timeline]]]
   )

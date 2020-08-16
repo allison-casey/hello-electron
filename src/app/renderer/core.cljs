@@ -35,14 +35,13 @@
 
 (defn root-component []
   (let [tab @(rf/subscribe [::subs/tab])]
-    [:div
-     [:div.container
+    [:div.container
       [:div.row.justify-content-center
        [tabs]]
       [:div.row
        (case tab
          :character-select [char-select/render]
-         :combat-tracker [combat-tracker/render])]]]))
+         :combat-tracker [combat-tracker/render])]]))
 
 (defn start! []
   (rf/dispatch-sync [:initialize])

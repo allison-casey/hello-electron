@@ -73,8 +73,8 @@
 
 (defn render []
   [:<>
-   [:div.col
+   [:div.col-md
     [add-character]]
-   [:div.col-4]
-   [:div.col
+   [:div.col-md-4]
+   [:div.col-md
     [active-characters]]])
