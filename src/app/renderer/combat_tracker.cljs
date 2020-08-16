@@ -9,11 +9,20 @@
             [cuerdas.core :as cuerdas]
             [app.renderer.macros :refer [when-let*]]))
 
+(defn kv [key value]
+  [:p.m-0 [:strong key] " : " value])
+
+(defn render-additional-markup [markup]
+  [:ul.list-unstyled
+   (for [{:keys [key value]} markup]
+     ^{:key key}
+     [:li [kv key value]])])
+
 (defn character-selector []
   (let [characters @(rf/subscribe [::subs/characters])
         active-character @(rf/subscribe [::subs/selected-character-id])]
     [:<>
-     [:div.row [:div.col [:h4 "Characters"]]]
+     [:div.row [:div.col [:h4.text-center "Characters"]]]
      [:div.row
       [:div.col
        [:ul.list-group
@@ -50,11 +59,8 @@
                   {:ref #(when % (swap! s assoc :child-height (.-clientHeight %)))}]
                  children)]]]))))
 
-(defn kv [key value]
-  [:p.m-0 [:strong key] " : " value])
-
 (defn ^:private ability-li
-  [char-id {:keys [id name description cooldown back-in] :as ability}]
+  [char-id {:keys [id name description cooldown back-in additional-markup] :as ability}]
   (let [on-cooldown? (zero? (or back-in 0))]
     [:div.list-group-item.list-group-item-action.flex-column.align-items-start
      {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability char-id id])
@@ -69,6 +75,9 @@
                                        (.preventDefault event))}]]
       :right [(when-not on-cooldown? [:span.badge.badge-primary.badge-pill back-in])]
       :children [[:p.mb-1description description]
+                 (when additional-markup
+                   (render-additional-markup additional-markup))
+                 [:hr]
                  [kv "Cooldown" cooldown]]]]))
 
 (defn ^:private passive-li
@@ -90,7 +99,7 @@
                          ^{:key (:id passives)}
                          (passive-li passive))]
       [:<>
-       [:h4 "Character Info"]
+       [:h4.text-center "Character Info"]
        [:div.card
         [:div.card-body
          [:h5.card-title name]
@@ -119,19 +128,16 @@
     [:<>
      [:div.row
       [:div.col
-       [:h4 "Timeline"]
-       [:h5 "Advance Cooldowns"]]]
-     [:div.row
-      [:div.col
-       [:button.btn.btn-primary
+       [:h4.text-center "Timeline"]]]
+     [:div.row.d-flex.justify-content-around
+      [:button.btn.btn-primary
         {:type "button"
          :on-click #(rf/dispatch [:increment-round])}
-        "Round"]]
-      [:div.col
-       [:button.btn.btn-secondary
+        "Round"]
+      [:button.btn.btn-secondary
         {:type "button"
          :on-click #(rf/dispatch [:increment-interleaved-round])}
-        "Interleave"]]]
+        "Interleave"]]
      [:hr]
      [:div.row
       [:div.col

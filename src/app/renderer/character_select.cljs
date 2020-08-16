@@ -20,7 +20,7 @@
             submittable? (not (or (nil? @selected-template-id)
                                   @(rf/subscribe [::subs/duplicate-character-name? template-name])))]
         [:form
-         [:h4 "Add Characters"]
+         [:h4.text-center "Add Characters"]
          [:div.form-group
           [:label "Template"]
           [single-dropdown
@@ -55,7 +55,7 @@
   (let [characters @(rf/subscribe [::subs/characters])
         active-character @(rf/subscribe [::subs/selected-character-id])]
     [:div
-     [:h4.text-right "Characters"]
+     [:h4.text-center "Characters"]
      [:div.list-group.list-group-flush
       (for [{:keys [uuid name]} characters]
         ^{:key uuid}

@@ -28,7 +28,7 @@
   (let [selected-tab @(rf/subscribe [::subs/tab])
         tab (fn [name id]
               [:li.nav-itme {:on-click #(rf/dispatch [:change-tab id])}
-               [:a.nav-link {:href "#"} (if (= id selected-tab) [:u name] name)]])]
+               [:a.nav-link {:href "#"} [:h3 (if (= id selected-tab) [:u name] name)]]])]
     [:ul.nav.justify-content-center.p-3
      [tab "Character Select" :character-select]
      [tab "Combat Tracker" :combat-tracker]]))
