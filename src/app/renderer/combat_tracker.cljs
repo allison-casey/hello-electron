@@ -64,8 +64,7 @@
   [char {:keys [id name description cooldown back-in
                    additional-markup duration-left ap] :as ability}]
   (let [on-cooldown? (pos? (or back-in 0))
-        disabled? (or on-cooldown? (< (:ap-left char) ap))]
-    (println on-cooldown? (< (:ap-left char) ap) name)
+        disabled? (or on-cooldown? (< (or (:ap-left char) (:ap char)) ap))]
     [:div.list-group-item.list-group-item-action.flex-column.align-items-start
      {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability (:uuid char) id])
       :on-mouse-leave #(rf/dispatch [:remove-highlighted-ability])
