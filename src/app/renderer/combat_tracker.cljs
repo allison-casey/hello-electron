@@ -115,7 +115,7 @@
       :left [;; Use ability button
              [icon
               (if disabled? "fa-times-circle-o" "fa-check-circle-o")
-              :style     {:cursor (if disabled? "not-allowed" "pointer")}
+              :cursor (if disabled? "not-allowed" "pointer")
               :on-click  (fn [event]
                            (when-not disabled?
                              (rf/dispatch
@@ -127,6 +127,7 @@
               "fa-crosshairs"
               :cursor   "pointer"
               :on-click #(to-clipboard "/roll 1d20 + 4")]
+             ;; Copy damage button
              [icon "fa-bomb" :cursor "pointer"] ;; Copy damage button
              [bar]
              ;; AP Cost
@@ -198,7 +199,7 @@
 (defn line
   [x1 y1 x2 y2]
   [:line {:style {:stroke "black", :stroke-width 1, :fill "none"}
-          :x1 x1 :x2 x2 :y1 y1 :y2 y2}])
+          :x1 x1, :x2 x2, :y1 y1, :y2 y2}])
 
 (defn circle
   [cx cy r]
@@ -224,8 +225,7 @@
         @(rf/subscribe [::subs/highlighted-ability])]
     [:a.list-group-item.list-group-item-action.flex-column.align-items-start
     {:class [(when (and (= char hl-char-id) (= hl-ability-id id)) "bg-light")]
-     :style {:padding "0.1em"
-             :transition "background 0.25s"}}
+     :style {:padding "0.1em", :transition "background 0.25s"}}
     [:div.d-flex.w-100.justify-content-center
      [:p.mb-1 name]]]))
 
@@ -234,8 +234,8 @@
   [:div
    [round-title round]
    [:div.list-group.list-group-flush
-    (for [[_ {id :id} :as ability] abilities]
-      ^{:key id}
+    (for [[_ ability] abilities]
+      ^{:key (:id ability)}
       [round-ability ability])]])
 
 (defn timeline []
