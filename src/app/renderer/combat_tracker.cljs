@@ -172,17 +172,23 @@
         (ability-li char ability))]]) )
 
 (defn ^:private info-block
-  [{:keys [name faction description health dt ap-left ap interleaved?]}]
-  [:<>
-   [:h5.card-title name]
-   [:h6.card-subtitle.text-muted.mb-2 (cuerdas/title faction)]
-   [:p.card-text description]
-   [:ul.list-unstyled
-    [:li [kv "Health" health]]
-    [:li [kv "DT" dt]]
-    [:li [kv "AP" (gstring/format "%d / %d" ap (or ap-left ap))]]
-    (when interleaved?
-      [:li [:em "Interleaved"]])]])
+  [{:keys [name faction description health dt ap-left ap interleaved? uuid]}]
+  (letfn [(ap-left-bn [class key]
+            [icon class
+             :on-click #(rf/dispatch [key uuid])])]
+    [:<>
+    [:h5.card-title name]
+    [:h6.card-subtitle.text-muted.mb-2 (cuerdas/title faction)]
+    [:p.card-text description]
+    [:ul.list-unstyled
+     [:li [kv "Health" health]]
+     [:li [kv "DT" dt]]
+     [:li [:div.d-flex
+           [kv "AP" (gstring/format "%d / %d" (or ap-left ap) ap)]
+           [ap-left-bn "fa-caret-square-o-up" :inc-ap-left]
+           [ap-left-bn "fa-caret-square-o-down" :dec-ap-left]]]
+     (when interleaved?
+       [:li [:em "Interleaved" ]])]]))
 
 (defn character []
   (when-let* [{:keys [passives abilities] :as char}
@@ -220,7 +226,7 @@
      [circle 0 6 5]]]])
 
 (defn ^:private round-ability
-  [[char {:keys [id name]}]]
+  [char {:keys [id name]}]
   (let [{hl-char-id :character/id, hl-ability-id :ability/id}
         @(rf/subscribe [::subs/highlighted-ability])]
     [:a.list-group-item.list-group-item-action.flex-column.align-items-start
@@ -230,13 +236,13 @@
      [:p.mb-1 name]]]))
 
 (defn ^:private timeline-section
-  [[round abilities]]
+  [char [round abilities]]
   [:div
    [round-title round]
    [:div.list-group.list-group-flush
     (for [[_ ability] abilities]
       ^{:key (:id ability)}
-      [round-ability ability])]])
+      [round-ability char ability])]])
 
 (defn timeline []
   (let [on-cooldown @(rf/subscribe [::subs/abilities-on-cooldown])
@@ -262,7 +268,7 @@
        [:div.list-group
         (for [[round chunk] on-cooldown]
           ^{:key round}
-          [timeline-section [round chunk]])]]]]))
+          [timeline-section character-id [round chunk]])]]]]))
 
 ;; ** Render
 (defn render []

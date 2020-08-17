@@ -62,7 +62,6 @@
       (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :duration-left pos?] dec)
       (sp/transform [:characters sp/MAP-VALS #(:interleaved? %)] #(assoc % :ap-left (:ap %))))))
 
-
 (rf/reg-event-db
  :set-highlighted-ability
  (fn [db [_ character-id ability-id]]
@@ -79,3 +78,17 @@
  :change-tab
  (fn [db [_ tab]]
    (assoc db :tab tab)))
+
+(rf/reg-event-db
+ :inc-ap-left
+ (fn [db [_ char-uuid]]
+   (let [{:keys [ap-left ap] :as c} (get-in db [:characters char-uuid])
+         c (assoc c :ap-left (if ap-left (inc ap-left) (inc ap)))]
+     (assoc-in db [:characters char-uuid] c))))
+
+(rf/reg-event-db
+ :dec-ap-left
+ (fn [db [_ char-uuid]]
+   (let [{:keys [ap-left ap] :as c} (get-in db [:characters char-uuid])
+         c (assoc c :ap-left (if ap-left (dec ap-left) (dec ap)))]
+     (assoc-in db [:characters char-uuid] c))))
