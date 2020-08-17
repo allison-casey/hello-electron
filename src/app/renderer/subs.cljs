@@ -33,8 +33,12 @@
  (fn [db _]
    (let [on-cooldown
          (->> db
-            (sp/select [:characters sp/MAP-VALS :abilities sp/ALL #(-> % second :back-in pos?)])
-            (sort-by #(:back-in (second %)))
+            (sp/select [:characters
+                        sp/MAP-VALS
+                        (sp/collect-one :uuid)
+                        :abilities
+                        sp/MAP-VALS
+                        #(-> % :back-in pos?)])
             (group-by #(-> % second :back-in)))
 
          ;; This is to fill in the precedings rounds that have no
