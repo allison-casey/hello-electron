@@ -1,7 +1,27 @@
-# shadow-electron-starter
+# DnD Combat Tracker
+Generic combat tracker for AP based DnD systems.
+
+## Features
+- Yaml character templates
+- Per character AP counts
+- Track ability cooldowns in a round based timeline
+- Supports round based and interleaved (every turn) cooldowns
+- Abilities know when they can be used (enough AP, character alive, not on cooldown)
+- Copy pre-calculated accuracy and damage rolls to clipboard in roll20 syntax
+- Per character manual AP overrides
+- Track character health and deaths
+- Faction Colors
+
+## Todo
+- [ ] Specify custom template directory
+- [ ] Release binary
+- [ ] Host room for players to view tracker with DM
+- [ ] Spiffy animations ¬‿¬
+
+## Development
 ClojureScript + Shadow-cljs + Electron + Reagent
 
-## How to Run
+### How to Run
 ```
 npm install electron-prebuilt -g
 npm install shadow-cljs -g
@@ -11,7 +31,7 @@ npm run dev
 electron .
 ```
 
-## Release
+### Release
 ```
 npm run build
 electron-packager . HelloWorld --platform=darwin --arch=x64 --version=1.4.13
