@@ -1,7 +1,7 @@
 (ns app.renderer.combat-tracker
   (:require [re-frame.core :as rf]
             [reagent.core :as r]
-            [re-com.core :refer [horizontal-tabs single-dropdown input-text]]
+            [re-com.core :refer [modal-panel]]
             [app.renderer.subs :as subs]
             [app.renderer.events :as events]
             [goog.string :as gstring]
@@ -103,9 +103,28 @@
                               :height "16em"}])])]]]]))
 
 ;; ** Character Info Card
+
+(defn clipboard-button
+  [class string]
+  (let [showing? (r/atom false)]
+    (fn [class string]
+      [:<>
+       [icon
+        class
+        :cursor   "pointer"
+        :on-click (fn []
+                    (reset! showing? true)
+                    (js/setTimeout #(reset! showing? false) 1000)
+                    (to-clipboard string))]
+       (when @showing?
+         [modal-panel
+          :backdrop-on-click #(reset! showing? false)
+          :child [:span "Copied!"]])])))
+
 (defn ^:private ability-li
   [char {:keys [id name description cooldown back-in
-                additional-markup duration-left ap] :as ability}]
+                additional-markup duration-left ap
+                accuracy damage] :as ability}]
   (let [on-cooldown? (pos? (or back-in 0))
         enough-ap?   (>= (or (:ap-left char) (:ap char)) ap)
         dead? (<= (:health-left char) 0)
@@ -125,15 +144,16 @@
                              (rf/dispatch
                               [:use-ability (:uuid char) ability]))
                            (.preventDefault event))]
-             [bar]
-             ;; Copy accuracy button
-             [icon
-              "fa-crosshairs"
-              :cursor   "pointer"
-              :on-click #(to-clipboard "/roll 1d20 + 4")]
-             ;; Copy damage button
-             [icon "fa-bomb" :cursor "pointer"] ;; Copy damage button
-             [bar]
+             (when (or accuracy damage)
+               [:<>
+                [bar]
+                ;; Copy accuracy button
+                (when accuracy
+                  [clipboard-button "fa-crosshairs" (gstring/format "/roll %s" accuracy)])
+                ;; Copy damage button
+                (when damage
+                  [clipboard-button "fa-bomb" (gstring/format "/roll %s" damage)])
+                [bar]])
              ;; AP Cost
              [:div.text-muted (gstring/format "%sAP" ap)]]
 
