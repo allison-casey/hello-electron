@@ -21,11 +21,11 @@
      (assoc :health-left (:health t))))
 
 (defn add-character []
-  (let [templates              (or @(rf/subscribe [::subs/templates]) [])
-        selected-template-id   (r/atom nil)
+  (let [selected-template-id   (r/atom nil)
         template-name-override (r/atom nil)]
     (fn []
-      (let [selected-template (->> templates
+      (let [templates         @(rf/subscribe [::subs/templates])
+            selected-template (->> templates
                                  (filter #(= (:id %) @selected-template-id))
                                  first)
             placeholder-name  (get selected-template :name)
