@@ -1,7 +1,7 @@
 {
-  "name": "shadow-electorn-starter",
+  "name": "combat-tracker",
   "version": "1.0.0",
-  "description": "shadow-clijs electron starter",
+  "description": "DnD Combat Tracker for AP based game systems",
   "main": "resources/main.js",
   "scripts": {
     "dev": "./node_modules/.bin/shadow-cljs watch main renderer",
