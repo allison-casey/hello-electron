@@ -187,10 +187,10 @@
               (rf/dispatch [:dec-health-left uuid])
               (rf/dispatch [:inc-health-left uuid])))]
     [:<>
-     [:h5.card-title name (when (<= health-left 0)
-                            [:img.ml-2 {:src "img/skull-crossbones.png"
-                                        :width "16em"
-                                        :height "16em"}])]
+     [:h5.card-title.d-flex name (when (<= health-left 0)
+                                   [:img.ml-2 {:src "img/skull-crossbones.png"
+                                               :width "16em"
+                                               :height "16em"}])]
     [:h6.card-subtitle.text-muted.mb-2 (cuerdas/title faction)]
     [:p.card-text description]
     [:ul.list-unstyled
