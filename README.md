@@ -14,6 +14,7 @@ Generic combat tracker for AP based DnD systems.
 
 ## Todo
 - [ ] Specify custom template directory
+- [ ] Track turn order in combat tracker + advance turn button
 - [ ] Release binary
 - [ ] Host room for players to view tracker with DM
 - [ ] Spiffy animations ¬‿¬
