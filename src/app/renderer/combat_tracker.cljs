@@ -108,7 +108,8 @@
                 additional-markup duration-left ap] :as ability}]
   (let [on-cooldown? (pos? (or back-in 0))
         enough-ap?   (>= (or (:ap-left char) (:ap char)) ap)
-        disabled?    (or on-cooldown? (not enough-ap?))]
+        dead? (<= (:health-left char) 0)
+        disabled?    (or dead? on-cooldown? (not enough-ap?))]
     [:div.list-group-item.list-group-item-action.flex-column.align-items-start
      {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability (:uuid char) id])
       :on-mouse-leave #(rf/dispatch [:remove-highlighted-ability])
