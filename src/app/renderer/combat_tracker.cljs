@@ -224,20 +224,16 @@
      [:p.mb-1 name]]]))
 
 (defn ^:private timeline-section
-  [char [round abilities]]
+  [[round abilities]]
   [:div
    [round-title round]
    [:div.list-group.list-group-flush
-    (for [[_ ability] abilities]
+    (for [[char-id ability] abilities]
       ^{:key (:id ability)}
-      [round-ability char ability])]])
+      [round-ability char-id ability])]])
 
 (defn timeline []
   (let [on-cooldown @(rf/subscribe [::subs/abilities-on-cooldown])
-
-        {character-id :character/id, ability-id :ability/id}
-        @(rf/subscribe [::subs/highlighted-ability])
-
         button (fn [key label]
                  [:button.btn.btn-primary
                   {:type     "button"
@@ -256,7 +252,7 @@
        [:div.list-group
         (for [[round chunk] on-cooldown]
           ^{:key round}
-          [timeline-section character-id [round chunk]])]]]]))
+          [timeline-section [round chunk]])]]]]))
 
 ;; ** Render
 (defn render []
