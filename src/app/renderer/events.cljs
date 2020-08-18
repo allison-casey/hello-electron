@@ -7,6 +7,11 @@
  (fn [_ _]
    {:templates []
     :characters {}
+    :faction-colors {"spartans" "#d1daff"
+                     "bandits" "#ffa49e"
+                     "independent" "#95a341"
+                     "the-dead-hand" "#919191"
+                     "monster" "#a38f97"}
     :selected-character-id nil
     :tab :character-select
     :highlighted-ability {:character/id nil

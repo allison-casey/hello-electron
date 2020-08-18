@@ -3,6 +3,11 @@
             [com.rpl.specter :as sp]))
 
 (rf/reg-sub
+ ::faction-color
+ (fn [db [_ faction]]
+   (get-in db [:faction-colors faction])))
+
+(rf/reg-sub
  ::templates
  (fn [db _]
    (:templates db)))

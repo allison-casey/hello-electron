@@ -8,82 +8,37 @@
             [goog.string.format]
             [com.rpl.specter :as sp]
             [cuerdas.core :as cuerdas]
-            [app.renderer.macros :refer [when-let*]]))
+            [app.renderer.macros :refer [when-let*]]
+            [app.renderer.markup :as markup]
+            [app.renderer.components :refer [pill
+                                             icon
+                                             clipboard-button
+                                             kv
+                                             accordion
+                                             bar]]))
 
 ;; * Combat Tracker
 ;; ** Utility Elements
-(defn kv [key value]
-  [:p.m-0 [:strong key] " : " value])
+;; (defn kv [key value]
+;;   [:p.m-0 [:strong key] " : " value])
 
-(defn bar [] [:span.text-muted \u007C])
+;; (defn bar [] [:span.text-muted \u007C])
 
-(defn to-clipboard [text]
-  (.writeText js/navigator.clipboard text))
-
-(defn pill [number badge-color]
-  [:span.badge.badge-pill
-   {:class [badge-color]}
-   number])
-
-(defn render-additional-markup
-  [markup]
-  (when markup
-    [:ul.list-unstyled
-     (for [{:keys [key value]} markup]
-       ^{:key key}
-       [:li [kv key value]])]))
-
-(defn icon
-  [fa-class & {:keys [cursor on-click style]}]
-  [:div
-   [:i.fa.fa-fw
-    {:style    (merge style {:cursor cursor})
-     :on-click on-click
-     :class    [fa-class]}]])
-
-(defn accordion
-  [title & {:keys [children left right]
-            :or {left [] right []}}]
-  (let [s (r/atom {:open? false, :child-height 0})]
-    (fn
-      [title & {:keys [children left right]
-                :or {left [] right []}}]
-      (let [{:keys [open? child-height]} @s]
-        [:div.accordion
-         [:div.card
-          ;; Accordion Header
-          [:div.card-header
-           [:div.d-flex.w-100
-            ;; left side elements
-            (when (seq left) (into [:div.d-flex.pad-children-left] left))
-
-            ;; title elements
-            [:div.flex-grow-1.ml-1.align-middle.mb-0 title]
-
-            ;; right side elements
-            (when (seq right) (into [:div] right))
-
-            ;; drawer toggle icon
-            [:a.ml-1.align-middle
-             {:on-click #(swap! s update :open? not)
-              :style {:cursor "pointer"}}
-             [icon (if open? "fa-minus" "fa-plus")]]]]
-
-          ;; Accordion Body
-          [:div.collapse.show
-           {:style {:max-height (if open? child-height 0)
-                    :transition "max-height 0.8s"
-                    :overflow   "hidden"}}
-           ;; Capture the node ref to get the child height dynamically
-           (into [:div.card-body
-                  {:ref (fn [e] (when e (swap!
-                                         s
-                                         assoc
-                                         :child-height
-                                         (.-clientHeight e))))}]
-                 children)]]]))))
-
+;; (defn to-clipboard [text]
 ;; ** Character Selector
+
+(defn ^:private character-item
+  [{:keys [uuid name health-left faction] :as character} active-character]
+  (let [faction-color @(rf/subscribe [::subs/faction-color faction])]
+    [:li.list-group-item
+     {:on-click #(rf/dispatch [:set-selected-character-id uuid])
+      :class ["list-group-item" (if (= uuid active-character) "active")]
+      :style {:background faction-color}}
+     name (when (<= health-left 0)
+            [:img.ml-2 {:src "img/skull-crossbones.png"
+                        :width "16em"
+                        :height "16em"}])]))
+
 (defn character-selector []
   (let [characters @(rf/subscribe [::subs/characters])
         active-character @(rf/subscribe [::subs/selected-character-id])]
@@ -92,35 +47,30 @@
      [:div.row
       [:div.col
        [:ul.list-group
-        (for [{:keys [uuid name health-left]} characters]
-          ^{:key uuid}
-          [:li.list-group-item
-           {:on-click #(rf/dispatch [:set-selected-character-id uuid])
-            :class ["list-group-item" (if (= uuid active-character) "active")]}
-           name (when (<= health-left 0)
-                  [:img.ml-2 {:src "img/skull-crossbones.png"
-                              :width "16em"
-                              :height "16em"}])])]]]]))
+        (for [character characters]
+          ^{:key (:uuid character)}
+          [character-item character active-character])]]]]))
 
 ;; ** Character Info Card
 
-(defn clipboard-button
-  [class string]
-  (let [showing? (r/atom false)]
-    (fn [class string]
-      [:<>
-       [icon
-        class
-        :cursor   "pointer"
-        :on-click (fn []
-                    (reset! showing? true)
-                    (js/setTimeout #(reset! showing? false) 1000)
-                    (to-clipboard string))]
-       (when @showing?
-         [modal-panel
-          :backdrop-on-click #(reset! showing? false)
-          :child [:span "Copied!"]])])))
+;; (defn clipboard-button
+;;   [class string]
+;;   (let [showing? (r/atom false)]
+;;     (fn [class string]
+;;       [:<>
+;;        [icon
+;;         class
+;;         :cursor   "pointer"
+;;         :on-click (fn []
+;;                     (reset! showing? true)
+;;                     (js/setTimeout #(reset! showing? false) 1000)
+;;                     (to-clipboard string))]
+;;        (when @showing?
+;;          [modal-panel
+;;           :backdrop-on-click #(reset! showing? false)
+;;           :child [:span "Copied!"]])])))
 
+(defn spy [x] (cljs.pprint/pprint x) x)
 (defn ^:private ability-li
   [char {:keys [id name description cooldown back-in
                 additional-markup duration-left ap
@@ -161,7 +111,8 @@
               (when on-cooldown?         [pill back-in "badge-primary"])]
 
       :children [[:p.mb-1description description]
-                 (render-additional-markup additional-markup)
+                 (markup/render additional-markup)
+                 ;; (render-additional-markup additional-markup)
                  [:hr]
                  [kv "Cooldown" cooldown]]]]))
 
