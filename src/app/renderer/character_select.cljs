@@ -15,8 +15,10 @@
 (defn ^:private character-from-template
   [name t]
   (-> t
-      (assoc :name name)
-      (assoc :uuid (uuid name))) )
+     (assoc :name name)
+     (assoc :uuid (uuid name))
+     (assoc :ap-left (:ap t))
+     (assoc :health-left (:health t))))
 
 (defn add-character []
   (let [templates              (or @(rf/subscribe [::subs/templates]) [])

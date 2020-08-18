@@ -92,12 +92,15 @@
      [:div.row
       [:div.col
        [:ul.list-group
-        (for [{:keys [uuid name]} characters]
+        (for [{:keys [uuid name health-left]} characters]
           ^{:key uuid}
           [:li.list-group-item
            {:on-click #(rf/dispatch [:set-selected-character-id uuid])
             :class ["list-group-item" (if (= uuid active-character) "active")]}
-           name])]]]]))
+           name (when (<= health-left 0)
+                  [:img.ml-2 {:src "img/skull-crossbones.png"
+                              :width "16em"
+                              :height "16em"}])])]]]]))
 
 ;; ** Character Info Card
 (defn ^:private ability-li
@@ -172,21 +175,34 @@
         (ability-li char ability))]]) )
 
 (defn ^:private info-block
-  [{:keys [name faction description health dt ap-left ap interleaved? uuid]}]
-  (letfn [(ap-left-bn [class key]
+  [{:keys [name faction description health health-left
+           dt ap-left ap interleaved? uuid]}]
+  (letfn [(btn [class key]
             [icon class
-             :on-click #(rf/dispatch [key uuid])])]
+             :cursor "pointer"
+             :on-click #(rf/dispatch [key uuid])])
+          (scroll-dispatch [e]
+            (if (pos? (.-deltaY e))
+              (rf/dispatch [:dec-health-left uuid])
+              (rf/dispatch [:inc-health-left uuid])))]
     [:<>
-    [:h5.card-title name]
+     [:h5.card-title name (when (<= health-left 0)
+                            [:img.ml-2 {:src "img/skull-crossbones.png"
+                                        :width "16em"
+                                        :height "16em"}])]
     [:h6.card-subtitle.text-muted.mb-2 (cuerdas/title faction)]
     [:p.card-text description]
     [:ul.list-unstyled
-     [:li [kv "Health" health]]
+     [:li [:div.d-flex
+           [:div {:on-wheel scroll-dispatch}
+            [kv "Health" (gstring/format "%d / %d" health-left health)]]
+           [btn "fa-caret-square-o-up" :inc-health-left]
+           [btn "fa-caret-square-o-down" :dec-health-left]]]
      [:li [kv "DT" dt]]
      [:li [:div.d-flex
-           [kv "AP" (gstring/format "%d / %d" (or ap-left ap) ap)]
-           [ap-left-bn "fa-caret-square-o-up" :inc-ap-left]
-           [ap-left-bn "fa-caret-square-o-down" :dec-ap-left]]]
+           [kv "AP" (gstring/format "%d / %d" ap-left ap)]
+           [btn "fa-caret-square-o-up" :inc-ap-left]
+           [btn "fa-caret-square-o-down" :dec-ap-left]]]
      (when interleaved?
        [:li [:em "Interleaved" ]])]]))
 

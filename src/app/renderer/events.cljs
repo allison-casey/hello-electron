@@ -82,13 +82,19 @@
 (rf/reg-event-db
  :inc-ap-left
  (fn [db [_ char-uuid]]
-   (let [{:keys [ap-left ap] :as c} (get-in db [:characters char-uuid])
-         c (assoc c :ap-left (if ap-left (inc ap-left) (inc ap)))]
-     (assoc-in db [:characters char-uuid] c))))
+   (update-in db [:characters char-uuid :ap-left] inc)))
 
 (rf/reg-event-db
  :dec-ap-left
  (fn [db [_ char-uuid]]
-   (let [{:keys [ap-left ap] :as c} (get-in db [:characters char-uuid])
-         c (assoc c :ap-left (if ap-left (dec ap-left) (dec ap)))]
-     (assoc-in db [:characters char-uuid] c))))
+   (update-in db [:characters char-uuid :ap-left] dec)))
+
+(rf/reg-event-db
+ :inc-health-left
+ (fn [db [_ char-uuid]]
+   (update-in db [:characters char-uuid :health-left] inc)))
+
+(rf/reg-event-db
+ :dec-health-left
+ (fn [db [_ char-uuid]]
+   (update-in db [:characters char-uuid :health-left] dec)))
