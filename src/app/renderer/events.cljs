@@ -52,12 +52,13 @@
  (fn [db [_ character-uuid {:keys [id cooldown ap duration]}]]
    (let [character (get-in db [:characters character-uuid])
          ability (-> (get-in character [:abilities id])
-                    (assoc :back-in cooldown)
-                    (cond-> duration (assoc :duration-left duration)))
+                    (assoc-in [:tracker/internal :back-in] cooldown)
+                    (cond-> duration (assoc-in [:tracker/internal :duration-left] duration)))
          character (-> character
-                      (assoc :ap-left (- (or (:ap-left character)
-                                             (:ap character))
-                                         ap))
+                      (assoc-in [:tracker/internal :ap-left]
+                                (- (or (:ap-left (:tracker/internal character))
+                                       (:ap character))
+                                   ap))
                       (assoc-in [:abilities id] ability))]
      (assoc-in db [:characters character-uuid] character))))
 
@@ -65,17 +66,17 @@
  :increment-round
  (fn [db _]
    (->> db
-      (sp/transform [:characters sp/MAP-VALS :abilities sp/MAP-VALS :back-in pos?] dec)
-      (sp/transform [:characters sp/MAP-VALS :abilities sp/MAP-VALS :duration-left pos?] dec)
-      (sp/transform [:characters sp/MAP-VALS] #(assoc % :ap-left (:ap %))))))
+      (sp/transform [:characters sp/MAP-VALS :abilities sp/MAP-VALS :tracker/internal :back-in pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS :abilities sp/MAP-VALS :tracker/internal :duration-left pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS] #(assoc-in % [:tracker/internal :ap-left] (:ap %))))))
 
 (rf/reg-event-db
  :increment-interleaved-round
  (fn [db _]
    (->> db
-      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :back-in pos?] dec)
-      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :duration-left pos?] dec)
-      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %)] #(assoc % :ap-left (:ap %))))))
+      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :tracker/internal :back-in pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %) :abilities sp/MAP-VALS :tracker/internal :duration-left pos?] dec)
+      (sp/transform [:characters sp/MAP-VALS #(:interleaved? %)] #(assoc-in % [:tracker/internal :ap-left] (:ap %))))))
 
 (rf/reg-event-db
  :set-highlighted-ability
@@ -97,19 +98,19 @@
 (rf/reg-event-db
  :inc-ap-left
  (fn [db [_ char-uuid]]
-   (update-in db [:characters char-uuid :ap-left] inc)))
+   (update-in db [:characters char-uuid :tracker/internal :ap-left] inc)))
 
 (rf/reg-event-db
  :dec-ap-left
  (fn [db [_ char-uuid]]
-   (update-in db [:characters char-uuid :ap-left] dec)))
+   (update-in db [:characters char-uuid :tracker/internal :ap-left] dec)))
 
 (rf/reg-event-db
  :inc-health-left
  (fn [db [_ char-uuid]]
-   (update-in db [:characters char-uuid :health-left] inc)))
+   (update-in db [:characters char-uuid :tracker/internal :health-left] inc)))
 
 (rf/reg-event-db
  :dec-health-left
  (fn [db [_ char-uuid]]
-   (update-in db [:characters char-uuid :health-left] dec)))
+   (update-in db [:characters char-uuid :tracker/internal :health-left] dec)))

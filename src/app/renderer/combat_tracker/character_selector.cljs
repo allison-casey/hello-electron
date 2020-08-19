@@ -4,7 +4,9 @@
 
 
 (defn ^:private character-item
-  [{:keys [uuid name health-left faction] :as character} active-character]
+  [{:keys [uuid name faction]
+    {health-left :health-left} :tracker/internal
+    :as character} active-character]
   (let [faction-color @(rf/subscribe [::subs/faction-color faction])]
     [:li.list-group-item
      {:on-click #(rf/dispatch [:set-selected-character-id uuid])

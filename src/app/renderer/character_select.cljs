@@ -17,8 +17,8 @@
   (-> t
      (assoc :name name)
      (assoc :uuid (uuid name))
-     (assoc :ap-left (:ap t))
-     (assoc :health-left (:health t))
+     (assoc-in [:tracker/internal :ap-left] (:ap t))
+     (assoc-in [:tracker/internal :health-left] (:health t))
      (assoc :abilities (#(zipmap (map :id %) %) (:abilities t)))))
 
 (defn add-character []

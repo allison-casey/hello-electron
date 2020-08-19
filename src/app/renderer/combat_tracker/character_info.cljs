@@ -14,12 +14,14 @@
                                              bar]]))
 
 (defn ^:private ability-li
-  [char {:keys [id name description cooldown back-in
-                additional-markup duration-left ap
-                accuracy damage] :as ability}]
+  [char {:keys [id name description cooldown
+                additional-markup ap
+                accuracy damage]
+         {:keys [back-in duration-left]} :tracker/internal
+         :as ability}]
   (let [on-cooldown? (pos? (or back-in 0))
-        enough-ap?   (>= (or (:ap-left char) (:ap char)) ap)
-        dead? (<= (:health-left char) 0)
+        enough-ap?   (>= (or (-> char :tracker/internal :ap-left) (:ap char)) ap)
+        dead? (<= (-> char :tracker/internal :health-left) 0)
         disabled?    (or dead? on-cooldown? (not enough-ap?))]
     [:div.list-group-item.list-group-item-action.flex-column.align-items-start
      {:on-mouse-enter #(rf/dispatch [:set-highlighted-ability (:uuid char) id])
@@ -89,8 +91,9 @@
         [ability-li char ability])]]) )
 
 (defn ^:private info-block
-  [{:keys [name faction description health health-left
-           dt ap-left ap interleaved? uuid]}]
+  [{:keys [name faction description health
+           dt ap interleaved? uuid]
+    {:keys [ap-left health-left] :as internals} :tracker/internal}]
   (letfn [(btn [class key]
             [icon class
              :cursor "pointer"

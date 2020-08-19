@@ -58,8 +58,8 @@
                         (sp/collect-one :uuid)
                         :abilities
                         sp/MAP-VALS
-                        #(-> % :back-in pos?)])
-            (group-by #(-> % second :back-in)))
+                        #(-> % :tracker/internal :back-in pos?)])
+            (group-by #(-> % second :tracker/internal :back-in)))
 
          ;; This is to fill in the precedings rounds that have no
          ;; abilities to fill them so rounds [2, 3] become [1, 2, 3]
@@ -75,7 +75,7 @@
  (fn [[_ character-id ability-id]]
    (rf/subscribe [::character-info character-id]))
  (fn [character [_ _ ability-id]]
-   (pos? (get-in character [:abilities ability-id :back-in]))))
+   (pos? (get-in character [:abilities ability-id :tracker/internal :back-in]))))
 
 (rf/reg-sub
  ::highlighted-ability
