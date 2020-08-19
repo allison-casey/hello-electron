@@ -86,7 +86,7 @@
      [:div.list-group.list-group-flush
       (for [ability abilities]
         ^{:key (:id ability)}
-        (ability-li char ability))]]) )
+        [ability-li char ability])]]) )
 
 (defn ^:private info-block
   [{:keys [name faction description health health-left
