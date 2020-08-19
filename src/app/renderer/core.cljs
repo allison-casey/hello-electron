@@ -15,14 +15,14 @@
 
 (enable-console-print!)
 
-(defn process-template [{:keys [abilities] :as template}]
-  (assoc template :abilities (#(zipmap (map :id %) %) abilities)))
+;; (defn process-template [{:keys [abilities] :as template}]
+;;   (assoc template :abilities (#(zipmap (map :id %) %) abilities)))
 
 (.on ipc
      "templates-reply"
      (fn [event arg]
        (rf/dispatch [:initialize-templates
-                     (map process-template (js->clj arg :keywordize-keys true))])))
+                     (js->clj arg :keywordize-keys true)])))
 
 (defn tabs []
   (let [selected-tab @(rf/subscribe [::subs/tab])

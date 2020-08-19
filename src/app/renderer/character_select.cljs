@@ -18,7 +18,8 @@
      (assoc :name name)
      (assoc :uuid (uuid name))
      (assoc :ap-left (:ap t))
-     (assoc :health-left (:health t))))
+     (assoc :health-left (:health t))
+     (assoc :abilities (#(zipmap (map :id %) %) (:abilities t)))))
 
 (defn add-character []
   (let [selected-template-id   (r/atom nil)

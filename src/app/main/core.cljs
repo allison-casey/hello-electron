@@ -5,9 +5,8 @@
             [cljs-node-io.core :as io]))
 
 (def main-window (atom nil))
+
 (def ipc (.-ipcMain (js/require "electron")))
-
-
 
 (.on ipcMain
      "load-templates"
