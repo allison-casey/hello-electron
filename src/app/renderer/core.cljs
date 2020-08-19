@@ -15,9 +15,6 @@
 
 (enable-console-print!)
 
-;; (defn process-template [{:keys [abilities] :as template}]
-;;   (assoc template :abilities (#(zipmap (map :id %) %) abilities)))
-
 (.on ipc
      "templates-reply"
      (fn [event arg]

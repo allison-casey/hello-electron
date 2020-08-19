@@ -17,10 +17,20 @@
                  :highlighted {:character nil
                                :ability nil}}}))
 
+(defn index-by-key [key seq]
+  (#(zipmap (map key %) %) seq))
+
 (rf/reg-event-db
  :initialize-templates
  (fn [db [_ templates]]
-   (assoc db :templates templates)))
+   (let [template-types (group-by :type templates)
+         characters (get template-types "character" [])
+         factions (->> (get template-types "factions" {})
+                     (mapcat :factions)
+                     (index-by-key :id))]
+     (-> db
+        (assoc :templates characters)
+        (assoc :factions factions)))))
 
 (rf/reg-event-db
  :add-character
