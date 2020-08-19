@@ -15,7 +15,8 @@
     :selections {:tab :character-select
                  :current-character nil
                  :highlighted {:character nil
-                               :ability nil}}}))
+                               :ability nil}}
+    :settings nil}))
 
 (defn index-by-key [key seq]
   (#(zipmap (map key %) %) seq))
@@ -114,3 +115,9 @@
  :dec-health-left
  (fn [db [_ char-uuid]]
    (update-in db [:characters char-uuid :tracker/internal :health-left] dec)))
+
+;; ** Settings
+(rf/reg-event-db
+ :set-settings
+ (fn [db [_ settings]]
+   (assoc db :settings settings)))

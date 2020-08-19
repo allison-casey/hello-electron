@@ -86,3 +86,10 @@
  ::tab
  (fn [db _]
    (get-in db [:selections :tab])))
+
+;; ** Settings
+
+(rf/reg-sub
+ ::template-dir
+ (fn [db _]
+   (get-in db [:settings :template_directory])))

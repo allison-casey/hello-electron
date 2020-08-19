@@ -8,6 +8,8 @@
             [app.renderer.events :as events]
             [app.renderer.character-select :as char-select]
             [app.renderer.combat-tracker :as combat-tracker]
+            [app.renderer.settings :as settings]
+            [app.renderer.macros :refer [defipc-handler]]
             [goog.string :as gstring]
             [goog.string.format]))
 
@@ -15,11 +17,14 @@
 
 (enable-console-print!)
 
-(.on ipc
-     "templates-reply"
-     (fn [event arg]
-       (rf/dispatch [:initialize-templates
-                     (js->clj arg :keywordize-keys true)])))
+(defipc-handler ipc "settings"
+  [_ arg]
+  (rf/dispatch [:set-settings (js->clj arg :keywordize-keys true)]))
+
+(defipc-handler ipc "templates-reply"
+  [_ arg]
+  (rf/dispatch [:initialize-templates
+                (js->clj arg :keywordize-keys true)]))
 
 (defn tabs []
   (let [selected-tab @(rf/subscribe [::subs/tab])
@@ -28,7 +33,8 @@
                [:a.nav-link {:href "#"} [:h3 (if (= id selected-tab) [:u name] name)]]])]
     [:ul.nav.justify-content-center.p-3
      [tab "Character Select" :character-select]
-     [tab "Combat Tracker" :combat-tracker]]))
+     [tab "Combat Tracker" :combat-tracker]
+     [tab "Settings" :settings]]))
 
 (defn root-component []
   (let [tab @(rf/subscribe [::subs/tab])]
@@ -38,11 +44,13 @@
       [:div.row
        (case tab
          :character-select [char-select/render]
-         :combat-tracker [combat-tracker/render])]]))
+         :combat-tracker [combat-tracker/render]
+         :settings [settings/render])]]))
 
 (defn start! []
   (rf/dispatch-sync [:initialize])
   (.send ipc "load-templates")
+  (.send ipc "load-settings")
   (rd/render
    [root-component]
    (js/document.getElementById "app-container")))
