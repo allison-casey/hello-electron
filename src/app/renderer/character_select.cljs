@@ -81,7 +81,7 @@
 
 (defn active-characters []
   (let [characters       @(rf/subscribe [::subs/characters])
-        active-character @(rf/subscribe [::subs/selected-character-id])]
+        active-character @(rf/subscribe [::subs/selected-character])]
     [:div
      [:h4.text-center "Characters"]
      [:div.list-group.list-group-flush

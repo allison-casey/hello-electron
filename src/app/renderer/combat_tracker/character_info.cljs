@@ -122,7 +122,7 @@
 
 (defn render []
   (when-let* [{:keys [passives abilities] :as char}
-              @(rf/subscribe [::subs/selected-character])]
+              @(rf/subscribe [::subs/selected-character-info])]
     [:<>
      [:h4.text-center "Character Info"]
      [:div.card

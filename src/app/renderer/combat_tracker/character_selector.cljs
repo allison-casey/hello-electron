@@ -17,7 +17,7 @@
 
 (defn render []
   (let [characters @(rf/subscribe [::subs/characters])
-        active-character @(rf/subscribe [::subs/selected-character-id])]
+        active-character @(rf/subscribe [::subs/selected-character])]
     [:<>
      [:div.row [:div.col [:h4.text-center "Characters"]]]
      [:div.row

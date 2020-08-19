@@ -3,9 +3,16 @@
             [com.rpl.specter :as sp]))
 
 (rf/reg-sub
+ ::faction-info
+ (fn [db [_ faction-id]]
+   (get-in db [:factions faction-id])))
+
+(rf/reg-sub
  ::faction-color
- (fn [db [_ faction]]
-   (get-in db [:factions faction :color])))
+ (fn [[_ faction]]
+   (rf/subscribe [::faction-info faction]))
+ (fn [faction-info]
+   (:color faction-info)))
 
 (rf/reg-sub
  ::templates
@@ -18,20 +25,28 @@
    (vals (:characters db))))
 
 (rf/reg-sub
- ::duplicate-character-name?
- (fn [db [_ name]]
-   (sp/selected-any? [:characters sp/MAP-VALS #(= name (:name %))] db)))
+ ::character-info
+ (fn [db [_ character-id]]
+   (get-in db [:characters character-id])))
 
 (rf/reg-sub
- ::selected-character-id
- (fn [db _]
-   (get-in db [:selections :current-character])))
+ ::duplicate-character-name?
+ (fn []
+   (rf/subscribe [::characters]))
+ (fn [characters [_ name]]
+   (boolean (some #(= name (:name %)) characters))))
 
 (rf/reg-sub
  ::selected-character
  (fn [db _]
-   (let [id (get-in db [:selections :current-character])]
-     (get (:characters db) id))))
+   (get-in db [:selections :current-character])))
+
+(rf/reg-sub
+ ::selected-character-info
+ (fn []
+   (rf/subscribe [::selected-character]))
+ (fn [character-id]
+   @(rf/subscribe [::character-info character-id])))
 
 (rf/reg-sub
  ::abilities-on-cooldown
@@ -57,8 +72,10 @@
 
 (rf/reg-sub
  ::ability-on-cooldown?
- (fn [db [_ char-id ability-id]]
-   (pos? (get-in db [:characters char-id :abilities ability-id :back-in]))))
+ (fn [[_ character-id ability-id]]
+   (rf/subscribe [::character-info character-id]))
+ (fn [character [_ _ ability-id]]
+   (pos? (get-in character [:abilities ability-id :back-in]))))
 
 (rf/reg-sub
  ::highlighted-ability
