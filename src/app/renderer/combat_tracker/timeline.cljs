@@ -27,7 +27,7 @@
 
 (defn ^:private round-ability
   [char {:keys [id name]}]
-  (let [{hl-char-id :character/id, hl-ability-id :ability/id}
+  (let [{hl-char-id :character, hl-ability-id :ability}
         @(rf/subscribe [::subs/highlighted-ability])]
     [:a.list-group-item.list-group-item-action.flex-column.align-items-start
     {:class [(when (and (= char hl-char-id) (= hl-ability-id id)) "bg-light")]

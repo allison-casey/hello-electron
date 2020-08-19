@@ -7,15 +7,15 @@
  (fn [_ _]
    {:templates []
     :characters {}
-    :faction-colors {"spartans" "#d1daff"
-                     "bandits" "#ffa49e"
-                     "independent" "#95a341"
-                     "the-dead-hand" "#919191"
-                     "monster" "#a38f97"}
-    :selected-character-id nil
-    :tab :character-select
-    :highlighted-ability {:character/id nil
-                          :ability/id nil}}))
+    :factions {"spartans"      {:color  "#d1daff"}
+               "bandits"       {:color "#ffa49e"}
+               "independent"   {:color "#95a341"}
+               "the-dead-hand" {:color "#919191"}
+               "monster"       {:color "#a38f97"}}
+    :selections {:tab :character-select
+                 :current-character nil
+                 :highlighted {:character nil
+                               :ability nil}}}))
 
 (rf/reg-event-db
  :initialize-templates
@@ -35,7 +35,7 @@
 (rf/reg-event-db
  :set-selected-character-id
  (fn [db [_ character-uuid]]
-   (assoc db :selected-character-id character-uuid)))
+   (assoc-in db [:selections :current-character] character-uuid)))
 
 (rf/reg-event-db
  :use-ability
@@ -70,19 +70,19 @@
 (rf/reg-event-db
  :set-highlighted-ability
  (fn [db [_ character-id ability-id]]
-   (assoc db :highlighted-ability {:character/id character-id
-                                   :ability/id ability-id})))
+   (assoc-in db [:selections :highlighted] {:character character-id
+                                            :ability ability-id})))
 
 (rf/reg-event-db
  :remove-highlighted-ability
  (fn [db _]
-   (assoc db :highlighted-ability {:character/id nil
-                                   :ability/id nil})))
+   (assoc-in db [:selections :highlighted] {:character nil
+                                            :ability nil})))
 
 (rf/reg-event-db
  :change-tab
  (fn [db [_ tab]]
-   (assoc db :tab tab)))
+   (assoc-in db [:selections :tab] tab)))
 
 (rf/reg-event-db
  :inc-ap-left

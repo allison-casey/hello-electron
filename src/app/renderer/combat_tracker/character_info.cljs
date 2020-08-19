@@ -13,7 +13,6 @@
                                              accordion
                                              bar]]))
 
-
 (defn ^:private ability-li
   [char {:keys [id name description cooldown back-in
                 additional-markup duration-left ap

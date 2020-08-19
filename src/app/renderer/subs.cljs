@@ -5,7 +5,7 @@
 (rf/reg-sub
  ::faction-color
  (fn [db [_ faction]]
-   (get-in db [:faction-colors faction])))
+   (get-in db [:factions faction :color])))
 
 (rf/reg-sub
  ::templates
@@ -25,12 +25,12 @@
 (rf/reg-sub
  ::selected-character-id
  (fn [db _]
-   (:selected-character-id db)))
+   (get-in db [:selections :current-character])))
 
 (rf/reg-sub
  ::selected-character
  (fn [db _]
-   (let [id (:selected-character-id db)]
+   (let [id (get-in db [:selections :current-character])]
      (get (:characters db) id))))
 
 (rf/reg-sub
@@ -63,9 +63,9 @@
 (rf/reg-sub
  ::highlighted-ability
  (fn [db _]
-   (:highlighted-ability db)))
+   (get-in db [:selections :highlighted])))
 
 (rf/reg-sub
  ::tab
  (fn [db _]
-   (:tab db)))
+   (get-in db [:selections :tab])))
