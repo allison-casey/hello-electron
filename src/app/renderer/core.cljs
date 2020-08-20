@@ -10,6 +10,9 @@
             [app.renderer.combat-tracker :as combat-tracker]
             [app.renderer.settings :as settings]
             [app.renderer.macros :refer [defipc-handler]]
+            [re-dnd.events]
+            [re-dnd.views]
+            [re-dnd.subs]
             [goog.string :as gstring]
             [goog.string.format]))
 

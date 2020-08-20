@@ -10,3 +10,58 @@
 .pad-children-left > *:not(:first-child) {
     margin-left: 0.25em;
 }
+
+.draggable, dropped-element {
+    cursor: move;
+    position: relative;
+}
+
+.drag-handle {
+    position: relative;
+    z-index: 1;
+    margin-left: 1.5em;
+    padding: 0;
+    cursor: pointer;
+    transform: scale(1.5) translateY(100%);
+}
+
+.dropped-element .col-md-1 {
+    flex: auto;
+    max-width: fit-content;
+}
+
+.draggable .drag-mask,
+.dropped-element .drag-mask {
+    /* position: absolute; */
+    /* top: 0px; */
+    /* left: 0px; */
+    /* width: 0px; */
+    /* height: 0px; */
+    background-color: rgba(0,0,0,0.2);
+    z-index: 9999;
+}
+
+/* .drag-handle { */
+/*     position: relative; */
+/*     transform: translate(0, 100%); */
+/*     z-index: 1; */
+/* } */
+
+/* .drop-zone.highlight { */
+/*     border: 1px solid #000; */
+/* } */
+
+.drop-marker {
+    width: 100%;
+    height: 4px;
+    margin-bottom: 5px;
+    background-color: white;
+}
+
+.drag-box {
+    position: fixed;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 999;
+    height: 0px;
+    width: 0px;
+}

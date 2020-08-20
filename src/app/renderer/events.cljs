@@ -16,6 +16,7 @@
                  :current-character nil
                  :highlighted {:character nil
                                :ability nil}}
+    :initiative (sorted-map)
     :settings nil}))
 
 (defn index-by-key [key seq]
