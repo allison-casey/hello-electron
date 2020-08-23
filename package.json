@@ -6,7 +6,15 @@
   "scripts": {
     "dev": "./node_modules/.bin/shadow-cljs watch main renderer",
     "build": "./node_modules/.bin/shadow-cljs compile main renderer",
-    "clean": "rm -rf resources/public/js/* && rm -rf target"
+    "clean": "rm -rf resources/public/js/* && rm -rf target",
+    "release": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "combat.tracker",
+    "mac": {
+      "category": "combat.tracker.category"
+    }
   },
   "keywords": [
     "shadow-cljs",
@@ -17,7 +25,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^8.2.5",
-    "shadow-cljs": "^2.10.19"
+    "electron-builder": "^22.8.0",
+    "shadow-cljs": "^2.10.22"
   },
   "dependencies": {
     "bootstrap-icons": "^1.0.0-alpha5",
@@ -26,6 +35,7 @@
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "scheduler": "^0.19.1",
+    "ws": "^7.3.1",
     "xregexp": "^4.3.0",
     "yaml": "^1.10.0"
   }
