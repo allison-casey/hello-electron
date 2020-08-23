@@ -16,7 +16,7 @@ Generic combat tracker for AP based DnD systems.
 - [ ] Reusable abilities/passives
 - [ ] Documentation: how to use, template syntax, etc
 - [ ] Release binary
-- [ ] Host room for players to view tracker with DM *
+- [ ] Host room for players to view tracker with DM
 - [ ] Spiffy animations ¬‿¬
 
 ## Development
