@@ -12,9 +12,14 @@
   },
   "repository": "https://github.com/allison-casey/combat-tracker",
   "build": {
+    "publish": "github",
     "appId": "com.alliej.tracker",
-    "mac": {
-      "category": "com.alliej.tracker.category"
+    "appImage": {
+      "license": "MIT"
+    },
+    "nsis": {
+      "createDesktopShortcut": "always",
+      "license": "MIT"
     }
   },
   "keywords": [
