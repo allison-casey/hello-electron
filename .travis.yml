@@ -39,6 +39,7 @@ script:
 deploy:
   provider: script
   script: bash deploy.travis.sh
+  cleanup: false
   on:
     branch: master
 
