@@ -1,6 +1,6 @@
 {
   "name": "combat-tracker",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "DnD Combat Tracker for AP based game systems",
   "main": "resources/main.js",
   "scripts": {
