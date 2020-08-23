@@ -15,11 +15,11 @@
     "publish": "github",
     "appId": "com.alliej.tracker",
     "appImage": {
-      "license": "MIT"
+      "license": "LICENSE"
     },
     "nsis": {
       "createDesktopShortcut": "always",
-      "license": "MIT"
+      "license": "LICENSE"
     }
   },
   "keywords": [
@@ -28,7 +28,7 @@
     "electron"
   ],
   "author": "Allison Casey <alliecasey21@gmail.com>",
-  "license": "MIT",
+  "license": "LICENSE",
   "devDependencies": {
     "electron": "^8.2.5",
     "electron-builder": "^22.8.0",
