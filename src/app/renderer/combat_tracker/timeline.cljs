@@ -57,7 +57,7 @@
        [:h4.text-center "Timeline"]]]
      [:div.row.d-flex.justify-content-around
       [button :increment-round "Round"]
-      [button :increment-interleaved-round "Interleave"]]
+      [button :increment-interleaved-round "Turn"]]
      [:hr]
      [:div.row
       [:div.col

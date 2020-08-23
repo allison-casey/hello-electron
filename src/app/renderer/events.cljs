@@ -7,11 +7,7 @@
  (fn [_ _]
    {:templates []
     :characters {}
-    :factions {"spartans"      {:color  "#d1daff"}
-               "bandits"       {:color "#ffa49e"}
-               "independent"   {:color "#95a341"}
-               "the-dead-hand" {:color "#919191"}
-               "monster"       {:color "#a38f97"}}
+    :factions {}
     :selections {:tab :character-select
                  :current-character nil
                  :highlighted {:character nil
