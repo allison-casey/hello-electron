@@ -14,6 +14,9 @@
   "build": {
     "publish": "github",
     "appId": "com.alliej.tracker",
+    "linux": {
+      "target": "AppImage"
+    },
     "appImage": {
       "license": "LICENSE"
     },
