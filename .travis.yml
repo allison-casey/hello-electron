@@ -18,6 +18,9 @@ cache:
     - $HOME/.cache/electron
     - $HOME/.cache/electron-builder
 
+before_install:
+  - yarn global add shadow-cljs
+
 script:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
@@ -36,7 +39,6 @@ script:
 deploy:
   provider: script
   script: bash deploy.travis.sh
-  skip_cleanup: true
   on:
     branch: master
 
