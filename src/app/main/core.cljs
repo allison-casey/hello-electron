@@ -44,9 +44,9 @@
 
 (defipc-handler ipc "load-templates"
   [event _]
-  (let [directory (.get store "template_directory")
-        templates (read-templates directory)]
-    (event.reply "templates-reply" templates)))
+  (when-let [directory (.get store "template_directory")]
+    (let [templates (read-templates directory)]
+      (event.reply "templates-reply" templates))))
 
 (defn init-browser []
   (reset! main-window (BrowserWindow.
