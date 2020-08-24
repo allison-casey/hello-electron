@@ -55,14 +55,13 @@
            :change-on-blur? false
            :width "100%"
            :placeholder placeholder-name]]
-         [button
-          :attr {:disabled ""}
-          :class (str "btn " (if submittable? "btn-primary" "btn-secondary"))
-          :label "Add Character"
-          :disabled? (not submittable?)
-          :on-click (fn []
-                      (let [c (character-from-template template-name selected-template)]
-                        (rf/dispatch [:add-character c])))]]))))
+         [:div
+          {:disabled ""
+           :class (str "btn " (if submittable? "btn-primary" "btn-secondary"))
+           :on-click (fn []
+                       (let [c (character-from-template template-name selected-template)]
+                         (rf/dispatch [:add-character c])))}
+          "Add Character"]]))))
 
 ;; ** Active Characters
 (defn ^:private character

@@ -22,10 +22,12 @@
 
 (defipc-handler ipc "settings"
   [_ arg]
+  (println "settings")
   (rf/dispatch [:set-settings (js->clj arg :keywordize-keys true)]))
 
 (defipc-handler ipc "templates-reply"
   [_ arg]
+  (println "template reply")
   (rf/dispatch [:initialize-templates
                 (js->clj arg :keywordize-keys true)]))
 
