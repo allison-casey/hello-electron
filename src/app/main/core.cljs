@@ -15,6 +15,10 @@
 (def ipc (.-ipcMain electron))
 (def dialog (.-dialog electron))
 
+(defn spy [x]
+  (js/console.log x)
+  x)
+
 (defn read-templates
   [directory]
   (let [files (.readdirSync fs directory)

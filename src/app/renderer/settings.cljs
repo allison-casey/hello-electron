@@ -84,14 +84,7 @@
                    :drop-marker :my-drop-marker}
                   (->> characters
                      (sort-by (comp :initiative :tracker/internal))
-                     (map #(update % :id keyword)))
-                  ;; [{:type :character
-                  ;;   :name "Ranger Bob"
-                  ;;   :id "ranger.bob"}
-                  ;;  {:type :character
-                  ;;   :name "Larissa"
-                  ;;   :id (keyword (cuerdas/kebab "Larissa"))}]
-                  ])
+                     (map #(update % :id keyword)))])
     (fn []
       [:div.container
        (when @drag-box-state
