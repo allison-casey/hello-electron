@@ -33,7 +33,7 @@
   "author": "Allison Casey <alliecasey21@gmail.com>",
   "license": "LICENSE",
   "devDependencies": {
-    "electron": "^8.2.5",
+    "electron": "^9.4.0",
     "electron-builder": "^22.8.0",
     "shadow-cljs": "^2.10.22",
     "source-map-support": "^0.5.19"
